@@ -57,7 +57,7 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # ==============================================================================
 # POSTGRESQL CONFIGURATION (Change connection string credentials if needed)
 # ==============================================================================
-LOCAL_POSTGRES = "postgres://postgres:password@localhost:5432/urms_db"
+LOCAL_POSTGRES = "postgres://postgres:169105@localhost:5432/urms_db"
 
 DATABASES = {
     'default': dj_database_url.config(
