@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="space-y-8">
+    <div class="bg-blue-900 text-white p-6 rounded-2xl shadow flex justify-between items-center flex-wrap gap-4">
+        <div>
+            <span class="text-xs font-bold uppercase tracking-widest text-blue-200">Management Space</span>
+            <h1 class="text-3xl font-black tracking-tight">Faculty Admin Master Console</h1>
+        </div>
+        <div class="bg-blue-800 text-xs px-4 py-2 rounded-lg font-mono font-bold">
+            Role Auth level: Tier 1 SuperUser / Executive
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="space-y-6">
+            <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+                <h3 class="text-base font-bold text-gray-900 mb-4 border-b border-gray-100 pb-2">Create Department Admin</h3>
+                
+                <form method="POST" class="space-y-4">
+                    {% csrf_token %}
+                    <input type="hidden" name="create_dept_admin" value="1">
+                    
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Username / ID</label>
+                        <input type="text" name="username" required placeholder="e.g., fdt_admin" class="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 text-xs outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Email Connection</label>
+                        <input type="email" name="email" placeholder="admin@university.edu" class="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 text-xs outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Secure Password</label>
+                        <input type="password" name="password" required placeholder="••••••••" class="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 text-xs outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Assign Target Department</label>
+                        <select name="department" required class="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 text-xs outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="">-- Choose Dept --</option>
+                            {% for dept in departments %}
+                                <option value="{{ dept.id }}">{{ dept.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="w-full bg-blue-700 hover:bg-blue-800 text-white font-bold text-xs py-2.5 rounded-lg shadow-sm transition-all">
+                        Register Account
+                    </button>
+                </form>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+                <h3 class="text-base font-bold text-gray-900 mb-3">Active Department Managers</h3>
+                <div class="divide-y divide-gray-100 text-xs max-h-60 overflow-y-auto">
+                    {% for admin in dept_admins %}
+                        <div class="py-2.5 flex justify-between items-center">
+                            <div>
+                                <span class="font-bold text-slate-800 block">{{ admin.user.username }}</span>
+                                <span class="text-[10px] text-gray-400 font-mono">{{ admin.user.email }}</span>
+                            </div>
+                            <span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded text-[10px] font-semibold">{{ admin.department.name }}</span>
+                        </div>
+                    {% empty %}
+                        <p class="text-gray-400 py-4 text-center">No department administrators registered yet.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="lg:col-span-2 space-y-4">
+            <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+                <div class="flex justify-between items-center border-b border-gray-100 pb-3 flex-wrap gap-2">
+                    <div>
+                        <h2 class="text-lg font-black text-gray-900">University Schedule Master View</h2>
+                        <p class="text-xs text-gray-500">Live monitoring across all department resource cells.</p>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button onclick="window.print()" class="bg-slate-900 text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow hover:bg-black transition-all">
+                            🖨️ Export Matrix View (PDF/Print)
+                        </button>
+                    </div>
+                </div>
+
+                <div class="mt-4 overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-xs">
+                        <thead>
+                            <tr class="bg-gray-100 text-gray-700 uppercase tracking-wider text-[10px] border-b border-gray-200">
+                                <th class="p-3">Day/Time</th>
+                                <th class="p-3">Department</th>
+                                <th class="p-3">Class Group</th>
+                                <th class="p-3">Course</th>
+                                <th class="p-3">Instructor</th>
+                                <th class="p-3">Room Location</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200">
+                            {% for r in all_routines %}
+                                <tr class="hover:bg-gray-50 transition-colors">
+                                    <td class="p-3 font-medium text-slate-900">
+                                        <div class="font-bold">{{ r.day_of_week }}</div>
+                                        <div class="text-[10px] text-gray-400 font-mono">{{ r.start_time|time:"h:i A" }} - {{ r.end_time|time:"h:i A" }}</div>
+                                    </td>
+                                    <td class="p-3 text-gray-600 font-semibold">{{ r.department.name }}</td>
+                                    <td class="p-3">
+                                        <span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-[10px] font-bold">
+                                            {{ r.semester }}{{ r.group_no }} {% if r.section != 'None' %}(Sec {{ r.section }}){% endif %}
+                                        </span>
+                                    </td>
+                                    <td class="p-3">
+                                        <div class="font-bold text-slate-800">{{ r.course.course_code }}</div>
+                                        <div class="text-[10px] text-gray-400 max-w-[150px] truncate">{{ r.course.title }}</div>
+                                    </td>
+                                    <td class="p-3 text-gray-700 font-medium">{{ r.teacher.name }}</td>
+                                    <td class="p-3">
+                                        {% if r.room.is_online %}
+                                            <span class="text-emerald-600 font-bold">🌐 Online</span>
+                                        {% else %}
+                                            <span class="text-slate-700 font-semibold">🚪 Room {{ r.room.room_number }}</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="6" class="p-8 text-center text-gray-400">No scheduled routine matrix configurations have been generated yet inside the database system.</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

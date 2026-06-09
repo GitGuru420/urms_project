@@ -1,0 +1,179 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="space-y-8">
+    <div class="bg-slate-900 text-white p-6 rounded-2xl shadow flex justify-between items-center flex-wrap gap-4">
+        <div>
+            <span class="text-xs font-bold uppercase tracking-widest text-emerald-400">Coordinator Workspace</span>
+            <h1 class="text-3xl font-black tracking-tight">{{ department.name }} Dashboard</h1>
+        </div>
+        <div class="bg-slate-800 text-xs px-4 py-2 rounded-lg font-mono font-bold text-slate-300">
+            Role Isolation Domain Locked
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        
+        <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm space-y-4">
+            <h3 class="text-sm font-bold text-gray-900 border-b border-gray-100 pb-2 flex items-center gap-2">👤 Add Department Instructor</h3>
+            <form method="POST" class="space-y-3">
+                {% csrf_token %}
+                <input type="hidden" name="create_teacher" value="1">
+                <div>
+                    <label class="block text-[10px] font-bold uppercase tracking-wider text-gray-500 mb-1">Full Name</label>
+                    <input type="text" name="full_name" required placeholder="e.g., Tasnim Ahmed" class="w-full bg-gray-50 border border-gray-300 rounded-lg px-2.5 py-1.5 text-xs outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-[10px] font-bold uppercase tracking-wider text-gray-500 mb-1">Unique Teacher code ID</label>
+                    <input type="text" name="teacher_id" required placeholder="e.g., T-10293" class="w-full bg-gray-50 border border-gray-300 rounded-lg px-2.5 py-1.5 text-xs outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-[10px] font-bold uppercase tracking-wider text-gray-500 mb-1">System Login ID Username</label>
+                    <input type="text" name="username" required placeholder="e.g., tasnim_auth" class="w-full bg-gray-50 border border-gray-300 rounded-lg px-2.5 py-1.5 text-xs outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-[10px] font-bold uppercase tracking-wider text-gray-500 mb-1">Account Password</label>
+                    <input type="password" name="password" required placeholder="••••••••" class="w-full bg-gray-50 border border-gray-300 rounded-lg px-2.5 py-1.5 text-xs outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <button type="submit" class="w-full bg-slate-900 hover:bg-black text-white text-xs font-bold py-2 rounded-md shadow-sm transition-all">
+                    Generate Teacher Profile
+                </button>
+            </form>
+        </div>
+
+        <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm space-y-4">
+            <h3 class="text-sm font-bold text-gray-900 border-b border-gray-100 pb-2 flex items-center gap-2">🚪 Room Inventory Setup</h3>
+            <form method="POST" class="space-y-4">
+                {% csrf_token %}
+                <input type="hidden" name="create_room" value="1">
+                <div>
+                    <label class="block text-[10px] font-bold uppercase tracking-wider text-gray-500 mb-1">Room Designation Number / Tag</label>
+                    <input type="text" name="room_number" required placeholder="e.g., 302, 501, UB 110" class="w-full bg-gray-50 border border-gray-300 rounded-lg px-2.5 py-1.5 text-xs outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div class="flex items-center gap-3 bg-gray-50 p-3 rounded-lg border border-gray-200">
+                    <input type="checkbox" name="is_online" id="is_online_box" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded">
+                    <label for="is_online_box" class="text-xs font-medium text-gray-700 select-none">Mark as Virtual / Online Room Portal</label>
+                </div>
+                <button type="submit" class="w-full bg-slate-900 hover:bg-black text-white text-xs font-bold py-2 rounded-md shadow-sm transition-all">
+                    Register Room Environment
+                </button>
+            </form>
+        </div>
+
+        <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm space-y-4">
+            <h3 class="text-sm font-bold text-gray-900 border-b border-gray-100 pb-2 flex items-center gap-2">📆 Class Routine Scheduler</h3>
+            <form method="POST" class="space-y-2.5">
+                {% csrf_token %}
+                <input type="hidden" name="create_routine" value="1">
+                
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-[9px] font-bold text-gray-500 uppercase">Course</label>
+                        <select name="course" required class="w-full bg-gray-50 border border-gray-300 rounded-md p-1 text-[11px]">
+                            {% for c in courses %}<option value="{{ c.id }}">{{ c.course_code }}</option>{% endfor %}
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[9px] font-bold text-gray-500 uppercase">Instructor</label>
+                        <select name="teacher" required class="w-full bg-gray-50 border border-gray-300 rounded-md p-1 text-[11px]">
+                            {% for t in teachers %}<option value="{{ t.id }}">{{ t.name }}</option>{% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-[9px] font-bold text-gray-500 uppercase">Location Room</label>
+                        <select name="room" required class="w-full bg-gray-50 border border-gray-300 rounded-md p-1 text-[11px]">
+                            {% for r in rooms %}<option value="{{ r.id }}">{{ r.room_number }} {% if r.is_online %}(Online){% endif %}</option>{% endfor %}
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[9px] font-bold text-gray-500 uppercase">Time Block Slot</label>
+                        <select name="timeslot" required class="w-full bg-gray-50 border border-gray-300 rounded-md p-1 text-[11px]">
+                            {% for ts in timeslots %}<option value="{{ ts.id }}">{{ ts.name }}</option>{% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-1.5">
+                    <div>
+                        <label class="block text-[9px] font-bold text-gray-500 uppercase">Semester</label>
+                        <select name="semester" required class="w-full bg-gray-50 border border-gray-300 rounded-md p-1 text-[11px]">
+                            {% for i in "12345678"|make_list %}<option value="{{ i }}">{{ i }}</option>{% endfor %}
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[9px] font-bold text-gray-500 uppercase">Group</label>
+                        <select name="group_no" required class="w-full bg-gray-50 border border-gray-300 rounded-md p-1 text-[11px]">
+                            <option value="A">A</option><option value="B">B</option><option value="C">C</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[9px] font-bold text-gray-500 uppercase">Lab Split</label>
+                        <select name="section" required class="w-full bg-gray-50 border border-gray-300 rounded-md p-1 text-[11px]">
+                            {% for val, text in sections %}<option value="{{ val }}">{{ val }}</option>{% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-[9px] font-bold text-gray-500 uppercase">Target Week Day</label>
+                    <select name="day_of_week" required class="w-full bg-gray-50 border border-gray-300 rounded-md p-1 text-[11px]">
+                        {% for day in days_of_week %}<option value="{{ day }}">{{ day }}</option>{% endfor %}
+                    </select>
+                </div>
+
+                <button type="submit" class="w-full bg-blue-700 hover:bg-blue-800 text-white text-xs font-bold py-2 rounded-md shadow mt-2 transition-all">
+                    Validate & Commit Schedule Slot
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+        <h2 class="text-lg font-black text-gray-900 mb-4">Active Scheduled Sessions Register Matrix</h2>
+        <div class="overflow-x-auto text-xs">
+            <table class="w-full border-collapse text-left">
+                <thead>
+                    <tr class="bg-slate-50 text-slate-500 uppercase tracking-widest text-[10px] border-b border-slate-200">
+                        <th class="p-3">Timeline Clock</th>
+                        <th class="p-3">Batch Group Info</th>
+                        <th class="p-3">Syllabus Course</th>
+                        <th class="p-3">Assigned Instructor</th>
+                        <th class="p-3">Location Environment</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    {% for r in my_routines %}
+                        <tr class="hover:bg-slate-50 transition-colors">
+                            <td class="p-3 font-medium">
+                                <span class="font-bold text-slate-800 block">{{ r.day_of_week }}</span>
+                                <span class="text-[10px] text-gray-400 font-mono">{{ r.start_time|time:"h:i A" }} - {{ r.end_time|time:"h:i A" }}</span>
+                            </td>
+                            <td class="p-3">
+                                <span class="bg-slate-900 text-slate-100 px-2 py-0.5 rounded text-[10px] font-mono font-bold">
+                                    Batch {{ r.semester }}{{ r.group_no }} {% if r.section != 'None' %}(Lab Sec {{ r.section }}){% endif %}
+                                </span>
+                            </td>
+                            <td class="p-3">
+                                <span class="font-bold text-blue-700">{{ r.course.course_code }}</span> - <span class="text-gray-500 font-medium">{{ r.course.title }}</span>
+                            </td>
+                            <td class="p-3 font-semibold text-gray-700">{{ r.teacher.name }}</td>
+                            <td class="p-3">
+                                {% if r.room.is_online %}
+                                    <span class="text-emerald-600 font-bold block">🌐 Online Portal</span>
+                                {% else %}
+                                    <span class="text-slate-800 font-bold block">🚪 Room {{ r.room.room_number }}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr><td colspan="5" class="p-6 text-center text-gray-400">No scheduled timeline matrix registers found for this department.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock content %}
